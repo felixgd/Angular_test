@@ -5,7 +5,18 @@ var LocalStrategy = require('passport-local').Strategy;
 
 // load up the user model
 var User = require('../models/user');
+var crypto = require('crypto');
+var token;
 
+var nodemailer = require('nodemailer');
+
+var transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+           user: 'nodemailer.test1337@gmail.com',
+           pass: 'felixjose17'
+       }
+   });
 // expose this function to our app using module.exports
 module.exports = function(passport) {
 
@@ -17,12 +28,13 @@ module.exports = function(passport) {
 
     // used to serialize the user for the session
     passport.serializeUser(function(user, done) {
-            console.log('test');
+            console.log('User logged in');
         done(null, user.id);
     });
 
     // used to deserialize the user
     passport.deserializeUser(function(id, done) {
+        console.log('User logged out');
         User.findById(id, function(err, user) {
             done(err, user);
         });
@@ -38,9 +50,9 @@ module.exports = function(passport) {
         // by default, local strategy uses username and password, we will override with email
         usernameField : 'username',
         passwordField : 'password',
-        passReqToCallback : true // allows us to pass back the entire request to the callback
+        emailField: 'email'
     },
-    function(req, username, password, done) {
+    function(req, username, password, email, done) {
 
         // asynchronous
         // User.findOne wont fire unless data is sent back
@@ -50,28 +62,35 @@ module.exports = function(passport) {
         // we are checking to see if the user trying to login already exists
         User.findOne({ 'username' :  username }, function(err, user) {
             // if there are any errors, return the error
-            if (err)
+            if (err){
                 return done(err);
-
+            }
             // check to see if theres already a user with that email
             if (user) {
+                console.log('user already created');
                 return done(null, false);
             } else {
 
                 // if there is no user with that email
                 // create the user
                 var newUser            = new User();
-
+                token = crypto.randomBytes(16).toString('hex');
                 // set the user's local credentials
                 newUser.username    = username;
                 newUser.password = password;
-
+                newUser.email = email;
+                newUser.token = token;
+                newUser.status = false;
                 // save the user
                 newUser.save(function(err) {
-                    if (err)
+                    if (err){
                         throw err;
-                    return done(null, newUser);
+                    }
+                    console.log('User Sign Up');
                 });
+                send_email(newUser.email,req.body.host);
+                return done(null, newUser);
+                    
             }
 
         });    
@@ -83,8 +102,7 @@ module.exports = function(passport) {
     passport.use('local-login', new LocalStrategy({
         // by default, local strategy uses username and password, we will override with email
         usernameField : 'username',
-        passwordField : 'password',
-        passReqToCallback : true // allows us to pass back the entire request to the callback
+        passwordField : 'password'
     },
     function(req,username, password, done) { // callback with email and password from our form
 
@@ -113,6 +131,14 @@ module.exports = function(passport) {
         });
 
     }));
+
+    function send_email(email, host){
+        var mailOptions = { from: 'no-reply@to-doapp.com', to: email, subject: 'Account Verification Token', text: 'Hello,\n\n' + 'Please verify your account by clicking the link: \nhttp:\/\/' + host + '\/verification\/' +'/'+ token +'\/' + "\nAnd enter this Token:\n " + token};
+                                
+            transporter.sendMail(mailOptions, function (err) {
+            if (err) { return res.status(500).send({ msg: err.message }); }
+        })
+    }
 
 };
 

@@ -1,0 +1,14 @@
+<h1>Log In</h1>
+<div class="container" ng-controller="SigninController">
+    <div style="padding-right: 5.5%">
+    <label><span>Username: </span></label>
+    <input ng-model="user.username"/>
+    </div>
+    <div style="padding-right: 5%">
+    <label><span>Password: </span></label>
+    <input ng-model="user.password" type="password"/>
+    </div>
+    <div>
+    <button ng-click="login(user)" class="btn btn-success">Login</button>
+    </div>  
+</div>

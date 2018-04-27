@@ -21,7 +21,7 @@ app.use(passport.session());
 app.use(express.static(__dirname + '/public'));
 
 require('./routes/auth')(app, passport);
-//require('./routes/userroutes')(app, passport);
+require('./routes/userroutes')(app);
 
 app.use(function(req, res, next){
   var err = new Error ('Not Found');

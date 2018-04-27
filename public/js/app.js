@@ -20,6 +20,10 @@ app.config(function($routeProvider) {
           logincheck: checkLoggedin
         }
       })
+      .when('/verify', {
+        templateUrl: 'views/verification.html',
+        controller: 'VerifyCtrl'
+      })
       .otherwise({
         redirectTo: '/home'
       })
@@ -27,12 +31,13 @@ app.config(function($routeProvider) {
   
   var checkLoggedin = function($q, $timeout, $http, $location, $rootScope) {
     var deferred = $q.defer();
-  
+    console.log('lol?')
     $http.get('/loggedin').success(function(user) {
       $rootScope.errorMessage = null;
       //User is Authenticated
       if (user !== '0') {
         $rootScope.currentUser = user;
+        console.log(user);
         deferred.resolve();
       } else { //User is not Authenticated
         $rootScope.errorMessage = 'You need to log in.';

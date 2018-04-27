@@ -1,4 +1,5 @@
+var User=require('../models/user');
 
-exports.auth_controller_index = function(req,res){
+exports.user_controller_verification_post = function(req,res){
     res.sendfile('./public/index.html');
 }

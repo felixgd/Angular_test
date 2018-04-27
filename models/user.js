@@ -7,9 +7,7 @@ var User = new mongoose.Schema({
     username: String,
     email: String,
     password: String,
-    status: {type: Boolean,
-      default: false
-    },
+    status: Boolean,
     token : {type: String, expires:"60"},
     createdAt: {type: Date, default: Date.now}
   },{collection:'User'});

@@ -17,9 +17,9 @@ app.post('/login', passport.authenticate('local-login', {
     failureRedirect : '/', // redirect back to the signup page if there is an error
 }));
 
-app.get('/dashboard', function(req, res) {
+app.get("/loggedin", function(req, res) {
     res.send(req.isAuthenticated() ? req.user : '0');
-});
+  });
 
 app.get('/logout', function(req, res){
     req.logout();

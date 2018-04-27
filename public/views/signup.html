@@ -1,16 +1,13 @@
 <div class="container">
 <h1>Sign Up</h1>
 <div class="row">
-  <input placeholder="username" ng-model="user.username"/>
+  <input placeholder="Email" type="email" ng-model="user.username" required />
 </div>
 <div class="row">
-  <input placeholder="Email" type="email" ng-model="user.email" />
+  <input placeholder="Password" ng-model="user.password" type="password" required />
 </div>
 <div class="row">
-  <input placeholder="Password" ng-model="user.password" type="password" />
-</div>
-<div class="row">
-  <input placeholder="Repeat Password" ng-model="user.password2" type="password" />
+  <input placeholder="Repeat Password" ng-model="user.password2" type="password" required />
 </div>
   <button ng-click="signup(user)" class="btn btn-success">Sign Up</button>
 </div>

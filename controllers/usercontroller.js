@@ -3,36 +3,34 @@ var db = require('../libs/db');
 var path = require("path");
 var express = require('express');
 var app = express();
-var salt = 10;
-var crypto = require('crypto');
-var nodemailer = require('nodemailer');
 
-var { body,validationResult } = require('express-validator/check');
-var { sanitizeBody } = require('express-validator/filter');
 
-var token;
+exports.user_controller_verification_post = function(req, res){
+    console.log(req.body.token);
+    User.findOne({token: req.body.token})
+    .exec(function(err, found_user){
+        if(err){
+            console.log('error');
+            return (err)
+        }
 
-var transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-           user: 'nodemailer.test1337@gmail.com',
-           pass: 'felixjose17'
-       }
-   });
-   
-exports.user_controller_index_post = [
-    sanitizeBody('username').trim().escape(),
-    sanitizeBody('password').trim().escape(),
+        console.log(found_user);
 
-    (req, res, next)=>{
-        console.log('lolxd');
+        if(found_user){
+            found_user.status = true;
+            found_user.save(function(err, suser){
+                if(err){
+                    console.log('error');
+                    return (err)
+                }
+
+                console.log(suser.status);
+                return res.redirect('/');
+            })
+            
+        }else{
+        console.log('User not found');
+        return res.redirect('/#/signup');
     }
-]
-
-function send_email(token, email, host){
-    var mailOptions = { from: 'no-reply@to-doapp.com', to: email, subject: 'Account Verification Token', text: 'Hello,\n\n' + 'Please verify your account by clicking the link: \nhttp:\/\/' + host + '\/verification\/' +'/'+ token +'\/' + "\nAnd enter this Token:\n " + token};
-                            
-        transporter.sendMail(mailOptions, function (err) {
-        if (err) { return res.status(500).send({ msg: err.message }); }
-    })
+    });
 }

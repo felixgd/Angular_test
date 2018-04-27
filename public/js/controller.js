@@ -23,9 +23,21 @@ app.controller("NavCtrl", function($rootScope, $scope, $http, $location) {
   });
   
   app.controller("LoginCtrl", function($location, $scope, $http, $rootScope) {
+    console.log('logging in');
     $scope.login = function(user) {
-      console.log('assdgf');
       $http.post('/login', user)
+        .success(function(response) {
+          console.log(response);
+          $rootScope.currentUser = response;
+          $location.url("/profile");
+        });
+    }
+  });
+
+  app.controller("VerifyCtrl", function($location, $scope, $http, $rootScope) {
+    $scope.verify = function(user) {
+      console.log('verifying');
+      $http.post('/verify', user)
         .success(function(response) {
           $rootScope.currentUser = response;
           $location.url("/profile");
